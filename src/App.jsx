@@ -10,7 +10,7 @@ import SignupPage from './pages/SignupPage';
 import { GridBackgroundDemo } from "./components/GridBackground";
 import { LayoutGrid } from './components/Layoutgrid';
 import LayoutGridDemo from './pages/Layoutgriddemo';
-import { HeroScrollDemo } from './components/help';
+import { HeroScrollDemo } from './components/Help';
 
 function App() {
   return (
