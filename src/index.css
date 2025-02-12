@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.glowing-text {
+  animation: glow 0.8s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.7);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-gray-950 text-gray-100;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800
+    shadow-lg hover:shadow-red-500/20 hover:border-red-500/50
+    transition-all duration-300 overflow-hidden;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg 
+    hover:from-red-700 hover:to-red-600 transition-all duration-300 font-medium
+    hover:shadow-lg hover:shadow-red-500/50;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-gray-900 text-red-500 border border-red-500/50 rounded-lg 
+    hover:bg-red-500/10 transition-all duration-300 font-medium
+    hover:shadow-lg hover:shadow-red-500/30;
+  }
+
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-800;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg
+    focus:ring-2 focus:ring-red-500 focus:border-red-500
+    text-gray-100 placeholder-gray-500;
+  }
+}
