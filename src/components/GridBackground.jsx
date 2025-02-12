@@ -1,7 +1,7 @@
 import React from "react"
 import LandingPage from "../pages/LandingPage"
 import LayoutGridDemo from "../pages/Layoutgriddemo"
-import { HeroScrollDemo } from "./help"
+import { HeroScrollDemo } from "./Help"
 import { Instagram, Linkedin, Mail } from "lucide-react"
 
 export function GridBackgroundDemo() {
