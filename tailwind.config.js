@@ -28,7 +28,7 @@ export default {
         },
       },
       animation: {
-        'gradient': 'gradient 8s linear infinite',
+        'gradient': 'gradient 8s linear infinite', 
       },
       keyframes: {
         gradient: {
