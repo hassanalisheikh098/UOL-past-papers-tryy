@@ -2,6 +2,30 @@
 import React, { useRef } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 
+const SocialIcons = () => {
+  return (
+    <div className="flex justify-center items-center space-x-6 py-8 mb-5">
+      <SocialIcon href="https://www.instagram.com/hassannn_alii/" icon={<Instagram />} label="Instagram" />
+      <SocialIcon href="https://www.linkedin.com/in/hassan-ali-sheikh-8037222aa/" icon={<Linkedin />} label="LinkedIn" />
+      <SocialIcon href="mailto:hassancodes098@gmail.com" icon={<Mail />} label="Email" />
+    </div>
+  )
+}
+
+const SocialIcon = ({ href, icon, label }) => {
+  return (
+    <a
+      href={href}
+      className="text-white hover:text-primary transition-colors duration-300 transform hover:scale-110"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span className="sr-only">{label}</span>
+      {React.cloneElement(icon, { size: 45 })}
+    </a>
+  )
+}
+
 export const ContainerScroll = ({
   titleComponent,
   children

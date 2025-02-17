@@ -21,7 +21,7 @@ export const LayoutGrid = ({ cards }) => {
   return (
     <div className="w-full h-full p-10 grid grid-cols-1 md:grid-cols-3  max-w-7xl mx-auto gap-4 relative pt-0 mt-0">
       {cards.map((card, i) => (
-        <div key={i} className={cn(card.className, "h-64 md:h-auto")}>
+        <div key={i} className={cn(card.className, "h-64 md:h-auto", i === cards.length - 1 ? "hidden md:block" : "")}>
           <motion.div
             onClick={() => handleClick(card)}
             onHoverStart={() => setHovered(card)}

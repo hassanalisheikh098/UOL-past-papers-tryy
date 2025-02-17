@@ -4,6 +4,8 @@ import { LayoutGrid } from "../components/Layoutgrid"
 import { useCounter } from "../useCounter"
 import me from "../assets/me.png";
 import mee from "../assets/mee.png";
+import { supabase } from "../lib/supabase.js";
+import { useState, useEffect } from "react";
 
 export default function LayoutGridDemo() {
   return (
@@ -13,17 +15,41 @@ export default function LayoutGridDemo() {
   )
 }
 
+async function getUserCount() {
+  const { count, error } = await supabase
+  .from('appusers')  // Replace 'users' with your table name
+  .select('*', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('Error fetching user count:', error);
+    return 0; // Return 0 or handle the error as needed
+  } else {
+    console.log('Total users:', count);
+    return count; // Return the count value
+  }
+}
+
 const SkeletonOne = () => {
-  const userCount = useCounter(1200);
   const paperCount = useCounter(500);
   const deptCount = useCounter(50);
+  const [users, setUsers] = useState(0);
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      const userCount = await getUserCount();
+      setUsers(userCount);
+    };
+    fetchUserCount();
+  }, []);
+
+  const count = useCounter(users);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full ">
       <div className="grid grid-cols-3 gap-4 w-full">
         <div className="flex flex-col items-center">
           <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">
-            {userCount}
+           { count }
           </h1>
           <p className="text-neutral-200 text-sm md:text-base mt-4">Active Users</p>
         </div>
@@ -61,7 +87,7 @@ const SkeletonTwo = () => {
       <p className="font-bold md:text-4xl text-xl bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 to-neutral-400 bg-opacity-50">Meet the Founder</p>
       <p className="font-normal text-base text-white"></p>
       <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-      Hassan, a 5th-semester BSCS student at UOL, isn’t just learning—he’s building, innovating, and shaping the future. Fueled by a passion for technology and a drive to create impact, he’s on a mission to turn ideas into reality. Hassan believes in making a difference—one line of code at a time.
+      Hassan, a 5th-semester BSCS student at UOL. Fueled by a passion for technology and a drive to create impact, he's on a mission to turn ideas into reality. Hassan believes in making a difference—one line of code at a time.
       </p>
     </div>
   )

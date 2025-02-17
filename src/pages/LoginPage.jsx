@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 function LoginPage() {
@@ -9,6 +9,18 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [popupMessage, setPopupMessage] = useState('');
+
+  const location = useLocation();
+  
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const message = queryParams.get('message');
+    if (message) {
+      setPopupMessage(message);
+      setTimeout(() => setPopupMessage(''), 3000); // Clear message after 3 seconds
+    }
+  }, [location]);
 
   const handleGoogleSignup = async () => {
     try {
@@ -150,6 +162,12 @@ function LoginPage() {
           </form>
         </div>
       </motion.div>
+
+      {popupMessage && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white p-2 rounded">
+          {popupMessage}
+        </div>
+      )}
     </div>
   );
 }

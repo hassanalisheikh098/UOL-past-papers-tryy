@@ -1,14 +1,38 @@
 import { motion } from 'framer-motion';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
-const semesters = Array.from({ length: 8 }, (_, i) => ({
-  id: i + 1,
-  name: `Semester ${i + 1}`,
-}));
+async function fetchSemestersByDepartment(department) {
+  const { data, error } = await supabase
+    .from("Main")
+    .select("Semester")
+    .eq("Department", department); // Filter by department
+
+  if (error) {
+    console.error("Error fetching semesters:", error);
+    return [];
+  }
+
+  console.log(`Semesters for ${department}:`, data);
+  return [...new Set(data.map((item) => item.Semester))]; // Remove duplicates
+}
+
 
 function SemesterPage() {
   const navigate = useNavigate();
   const { departmentId } = useParams();
+  const [semesters, setSemesters] = useState([]);
+
+  useEffect(() => {
+    const loadSemesters = async () => {
+      const fetchedSemesters = await fetchSemestersByDepartment(departmentId);
+      setSemesters(fetchedSemesters.map((name, index) => ({ id: index + 1, name }))); // Create an array of objects
+    };
+
+    loadSemesters();
+  }, [departmentId]);
 
   return (
     <div className="min-h-screen bg-gray-950 p-4 pl-10 pr-10">
@@ -32,11 +56,11 @@ function SemesterPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -5 }}
-              onClick={() => navigate(`/courses/${semester.id}`)}
+              onClick={() => navigate(`/courses/${departmentId}/${semester.name}`)}
               className="card p-8 cursor-pointer group"
             >
               <h2 className="text-2xl font-semibold text-gray-100 group-hover:text-red-500 transition-colors">
-                {semester.name}
+                Semester {semester.name}
               </h2>
               <p className="text-gray-400 mt-2">View all courses and materials</p>
             </motion.div>

@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'; // Ensure correct import path
 function Navbar() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isOpen, setIsOpen] = useState(false); // State for mobile menu
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -39,14 +40,17 @@ function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => {
+                navigate('/');
+                window.scrollTo(0, 0); // Scroll to the top of the page
+              }}
               className="text-xl font-bold text-red-500 hover:text-red-400"
             >
               UOL Papers
             </button>
           </div>
 
-          <div className="flex-grow flex items-center justify-center space-x-10">
+          <div className="flex-grow hidden md:flex items-center justify-center space-x-10">
             <button
               onClick={() => navigate('/explore')}
               className="text-gray-300 hover:text-red-400"
@@ -54,36 +58,86 @@ function Navbar() {
               Explore
             </button>
             <button
-              onClick={() => navigate('/aboutus')}
+              onClick={() =>{ navigate('/aboutus');
+                window.scrollTo(0, 0);
+              }}
               className="text-gray-300 hover:text-red-400"
             >
               About Us
             </button>
             <button
-              onClick={() => navigate('/contribute')}
+              onClick={() => {navigate('/contribute')
+                window.scrollTo(0, 0);
+              }}
+    
               className="text-gray-300 hover:text-red-400"
             >
               Contribute
             </button>
           </div>
 
+          <div className="md:hidden">
+            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-300 hover:text-red-400">
+              {isOpen ? 'Close' : 'Menu'}
+            </button>
+          </div>
+
           {user ? (
             <span
               onClick={handleLogout}
-              className="text-gray-300 cursor-pointer hover:text-red-400"
+              className="text-gray-300 cursor-pointer hover:text-red-400 hidden md:block"
             >
               Log Out
             </span>
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="btn-secondary"
+              className="btn-secondary hidden md:block"
             >
               Login
             </button>
           )}
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-gray-800 p-4">
+          <button
+            onClick={() => navigate('/explore')}
+            className="block text-gray-300 hover:text-red-400 mb-2"
+          >
+            Explore
+          </button>
+          <button
+            onClick={() => navigate('/aboutus')}
+            className="block text-gray-300 hover:text-red-400 mb-2"
+          >
+            About Us
+          </button>
+          <button
+            onClick={() => navigate('/contribute')}
+            className="block text-gray-300 hover:text-red-400 mb-2"
+          >
+            Contribute
+          </button>
+          {user ? (
+            <span
+              onClick={handleLogout}
+              className="block text-gray-300 cursor-pointer hover:text-red-400"
+            >
+              Log Out
+            </span>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="btn-secondary block w-full text-center"
+            >
+              Login
+            </button>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
