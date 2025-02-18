@@ -30,8 +30,9 @@ async function getUserCount() {
 }
 
 const SkeletonOne = () => {
-  const paperCount = useCounter(500);
-  const deptCount = useCounter(50);
+  const paperCount = useCounter(62);
+  const deptCount = useCounter(1);
+  const tempuser = useCounter(79);
   const [users, setUsers] = useState(0);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const SkeletonOne = () => {
       <div className="grid grid-cols-3 gap-4 w-full">
         <div className="flex flex-col items-center">
           <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">
-           { count }
+           {tempuser}
           </h1>
           <p className="text-neutral-200 text-sm md:text-base mt-4">Active Users</p>
         </div>
