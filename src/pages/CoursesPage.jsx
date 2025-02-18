@@ -92,6 +92,7 @@ function CoursesPage() {
                 <div className="flex gap-4">
                   <a
                     href={user ? course.mid : '/login?message=Login to access past papers'}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="btn-secondary"
                     onClick={!user ? handleLoginClick : undefined}
@@ -99,7 +100,8 @@ function CoursesPage() {
                     Mid Exam
                   </a>
                   <a
-                    href={course.final}
+                    href={user ? course.final : '/login?message=Login to access past papers'}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="btn-primary"
                     onClick={!user ? handleLoginClick : undefined}
