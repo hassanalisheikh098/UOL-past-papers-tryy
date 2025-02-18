@@ -17,7 +17,7 @@ function SignupPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `/`, // Example redirect after successful auth
+          redirectTo: ('/'), // Example redirect after successful auth
         },
       });
       
