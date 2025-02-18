@@ -99,7 +99,7 @@ function CoursesPage() {
                     Mid Exam
                   </a>
                   <a
-                    href={isLoggedIn ? course.final : '/login?message=Login to access past papers'}
+                    href={course.final}
                     rel="noopener noreferrer"
                     className="btn-primary"
                     onClick={!user ? handleLoginClick : undefined}
