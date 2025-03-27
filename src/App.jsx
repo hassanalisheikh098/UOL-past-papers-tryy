@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import ExplorePage from './pages/ExplorePage';
 import SemesterPage from './pages/SemesterPage';
 import CoursesPage from './pages/CoursesPage';
@@ -28,6 +28,7 @@ function App() {
           <Route path="/aboutus" element={<LayoutGridDemo />} />
           <Route path="/contribute" element={<HeroScrollDemo/>} />
         </Routes>
+         <SpeedInsights />
       </div>
     </>
   )
