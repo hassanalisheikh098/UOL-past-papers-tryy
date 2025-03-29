@@ -32,7 +32,7 @@ async function getUserCount() {
 const SkeletonOne = () => {
   const paperCount = useCounter(62);
   const deptCount = useCounter(1);
-  const tempuser = useCounter(79);
+  const tempuser = useCounter(234);
   const [users, setUsers] = useState(0);
 
   useEffect(() => {
