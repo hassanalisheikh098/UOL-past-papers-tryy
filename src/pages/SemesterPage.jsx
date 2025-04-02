@@ -28,7 +28,10 @@ function SemesterPage() {
   useEffect(() => {
     const loadSemesters = async () => {
       const fetchedSemesters = await fetchSemestersByDepartment(departmentId);
-      setSemesters(fetchedSemesters.map((name, index) => ({ id: index + 1, name }))); // Create an array of objects
+      const sortedSemesters = fetchedSemesters
+        .sort((a, b) => a - b) 
+        .map((name, index) => ({ id: index + 1, name }));
+      setSemesters(sortedSemesters);
     };
 
     loadSemesters();
