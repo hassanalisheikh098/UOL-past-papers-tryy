@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import fetchSemestersByDepartment from './SemesterPage'
-
 
 async function fetchCoursesByDepartmentAndSemester(department, semester) {
   const { data, error } = await supabase
@@ -25,41 +23,50 @@ async function fetchCoursesByDepartmentAndSemester(department, semester) {
   }));
 }
 
-
 function CoursesPage() {
   const { departmentId, semesterId } = useParams();
   const [courses, setCourses] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-
-  
 
   useEffect(() => {
     const fetchCourses = async () => {
       const fetchedCourses = await fetchCoursesByDepartmentAndSemester(departmentId, semesterId);
       setCourses(fetchedCourses);
-      console.log("sdsd" , departmentId)
     };
 
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user);
+      if (!session?.user) {
+        setShowPopup(true);
+      }
     };
-  
+
     getSession();
-  
-    // Update on auth state change
+
     supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user);
+      if (!session?.user) {
+        setShowPopup(true);
+      } else {
+        setShowPopup(false);
+      }
     });
 
     fetchCourses();
   }, [semesterId, departmentId]);
 
-  const handleLoginClick = () => {
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 3000);
+  const handleLinkClick = (link, type) => {
+    if (!user) {
+      alert("You need to log in to access this content.");
+      return;
+    }
+    if (!link) {
+      alert(`There are no ${type} papers available for this course.`);
+      return;
+    }
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -76,10 +83,22 @@ function CoursesPage() {
           <p className="text-gray-400 mt-2">Access past papers for your courses</p>
         </motion.div>
 
+        {showPopup && (
+          <div className="popup bg-gray-800 text-white p-4 rounded shadow-lg">
+            <p>You need to log in to access this content.</p>
+            <button
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
+              className="btn-primary mt-4"
+            >
+              Log in with Google
+            </button>
+          </div>
+        )}
+
         <div className="space-y-4">
           {courses.map((course, index) => (
             <motion.div
-              key={course.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -90,35 +109,23 @@ function CoursesPage() {
                   {course.course}
                 </h2>
                 <div className="flex gap-4">
-                  <a
-                    href={user ? course.mid : '/login?message=Login to access past papers'}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => handleLinkClick(course.mid, "Mid Exam")}
                     className="btn-secondary"
-                    onClick={!user ? handleLoginClick : undefined}
                   >
                     Mid Exam
-                  </a>
-                  <a
-                    href={user ? course.final : '/login?message=Login to access past papers'}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  </button>
+                  <button
+                    onClick={() => handleLinkClick(course.final, "Final Exam")}
                     className="btn-primary"
-                    onClick={!user ? handleLoginClick : undefined}
                   >
                     Final Exam
-                  </a>
+                  </button>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
-
-        {showPopup && (
-          <div className="fixed bottom-4 right-4 bg-red-500 text-white p-2 rounded">
-            Login to access past papers
-          </div>
-        )}
       </div>
     </div>
   );
