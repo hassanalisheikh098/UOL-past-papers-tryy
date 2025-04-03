@@ -2,8 +2,7 @@ import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import fetchSemestersByDepartment from './SemesterPage'
-
+import fetchSemestersByDepartment from './SemesterPage';
 
 async function fetchCoursesByDepartmentAndSemester(department, semester) {
   const { data, error } = await supabase
@@ -25,7 +24,6 @@ async function fetchCoursesByDepartmentAndSemester(department, semester) {
   }));
 }
 
-
 function CoursesPage() {
   const { departmentId, semesterId } = useParams();
   const [courses, setCourses] = useState([]);
@@ -33,23 +31,19 @@ function CoursesPage() {
   const [user, setUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
-  
-
   useEffect(() => {
     const fetchCourses = async () => {
       const fetchedCourses = await fetchCoursesByDepartmentAndSemester(departmentId, semesterId);
       setCourses(fetchedCourses);
-      console.log("sdsd" , departmentId)
     };
 
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user);
     };
-  
+
     getSession();
-  
-    // Update on auth state change
+
     supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user);
     });
@@ -84,31 +78,34 @@ function CoursesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="card p-6 group"
-            > 
-            {/* Final and Mids Button Wont Appear If their Coressponding Exam link Doesn't Exist */}
+            >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h2 className="text-xl font-semibold text-gray-100 group-hover:text-red-500 transition-colors">
                   {course.course}
                 </h2>
                 <div className="flex gap-4">
-                  <a
-                    href={user ? course.mid : '/login?message=Login to access past papers'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-secondary"
-                    onClick={!user ? handleLoginClick : undefined}
-                  >
-                    Mid Exam
-                  </a>
-                  <a
-                    href={user ? course.final : '/login?message=Login to access past papers'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary"
-                    onClick={!user ? handleLoginClick : undefined}
-                  >
-                    Final Exam
-                  </a>
+                  {course.mid && (
+                    <a
+                      href={user ? course.mid : '/login?message=Login to access past papers'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      onClick={!user ? handleLoginClick : undefined}
+                    >
+                      Mid Exam
+                    </a>
+                  )}
+                  {course.final && (
+                    <a
+                      href={user ? course.final : '/login?message=Login to access past papers'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      onClick={!user ? handleLoginClick : undefined}
+                    >
+                      Final Exam
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>
