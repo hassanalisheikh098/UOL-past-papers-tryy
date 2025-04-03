@@ -84,7 +84,8 @@ function CoursesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="card p-6 group"
-            >
+            > 
+            {/* Final and Mids Button Wont Appear If their Coressponding Exam link Doesn't Exist */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h2 className="text-xl font-semibold text-gray-100 group-hover:text-red-500 transition-colors">
                   {course.course}
