@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+import fetchSemestersByDepartment from './SemesterPage';
+
+
 async function fetchCoursesByDepartmentAndSemester(department, semester) {
   const { data, error } = await supabase
     .from("Main")
@@ -109,6 +112,7 @@ function CoursesPage() {
                   {course.course}
                 </h2>
                 <div className="flex gap-4">
+
                   <button
                     onClick={() => handleLinkClick(course.mid, "Mid Exam")}
                     className="btn-secondary"
@@ -121,6 +125,30 @@ function CoursesPage() {
                   >
                     Final Exam
                   </button>
+
+                  {course.mid && (
+                    <a
+                      href={user ? course.mid : '/login?message=Login to access past papers'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary"
+                      onClick={!user ? handleLoginClick : undefined}
+                    >
+                      Mid Exam
+                    </a>
+                  )}
+                  {course.final && (
+                    <a
+                      href={user ? course.final : '/login?message=Login to access past papers'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary"
+                      onClick={!user ? handleLoginClick : undefined}
+                    >
+                      Final Exam
+                    </a>
+                  )}
+
                 </div>
               </div>
             </motion.div>
