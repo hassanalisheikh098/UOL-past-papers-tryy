@@ -1,8 +1,7 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import fetchSemestersByDepartment from './SemesterPage';
 
 async function fetchCoursesByDepartmentAndSemester(department, semester) {
   const { data, error } = await supabase
@@ -27,14 +26,16 @@ async function fetchCoursesByDepartmentAndSemester(department, semester) {
 function CoursesPage() {
   const { departmentId, semesterId } = useParams();
   const [courses, setCourses] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [popup, setPopup] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
+      setLoading(true);
       const fetchedCourses = await fetchCoursesByDepartmentAndSemester(departmentId, semesterId);
       setCourses(fetchedCourses);
+      setLoading(false);
     };
 
     const getSession = async () => {
@@ -51,71 +52,131 @@ function CoursesPage() {
     fetchCourses();
   }, [semesterId, departmentId]);
 
-  const handleLoginClick = () => {
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 3000);
+  const handleLoginClick = (e) => {
+    e.preventDefault();
+    setPopup('Login to download past papers');
+    setTimeout(() => setPopup(null), 3000);
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-4 pl-10 pr-10">
-      <div className="max-w-7xl mx-auto py-12">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50"></div>
+      <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+
+      {/* Popup notification */}
+      <AnimatePresence>
+        {popup && (
+          <motion.div
+            key="popup"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-orange-500/90 text-white px-6 py-3 rounded-lg font-mono text-sm backdrop-blur-sm"
+          >
+            🔐 {popup}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card p-8 mb-8"
+          className="mb-12"
         >
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600">
+          <h1 className="text-5xl font-mono font-bold text-white mb-4">
             Available Courses
           </h1>
-          <p className="text-gray-400 mt-2">Access past papers for your courses</p>
+          <p className="text-gray-400 font-mono text-lg">
+            Semester {semesterId} • {departmentId}
+          </p>
         </motion.div>
 
+        {/* Courses List */}
         <div className="space-y-4">
-          {courses.map((course, index) => (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="card p-6 group"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h2 className="text-xl font-semibold text-gray-100 group-hover:text-red-500 transition-colors">
-                  {course.course}
-                </h2>
-                <div className="flex gap-4">
-                  {course.mid && (
-                    <a
-                      href={user ? course.mid : '/login?message=Login to access past papers'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary"
-                      onClick={!user ? handleLoginClick : undefined}
-                    >
-                      Mid Exam
-                    </a>
-                  )}
-                  {course.final && (
-                    <a
-                      href={user ? course.final : '/login?message=Login to access past papers'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary"
-                      onClick={!user ? handleLoginClick : undefined}
-                    >
-                      Final Exam
-                    </a>
-                  )}
+          {loading ? (
+            // Loading skeleton
+            Array(5).fill(0).map((_, i) => (
+              <motion.div
+                key={i}
+                className="h-20 bg-white/5 border border-white/10 rounded-2xl animate-pulse"
+              />
+            ))
+          ) : courses.length > 0 ? (
+            courses.map((course, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
+                className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 transition-all duration-300 group"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <h2 className="text-xl md:text-2xl font-mono font-bold text-white group-hover:text-gray-200 transition-colors">
+                      {course.course}
+                    </h2>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    {course.mid && (
+                      <motion.a
+                        href={user ? course.mid : '#'}
+                        target={user ? '_blank' : undefined}
+                        rel={user ? 'noopener noreferrer' : undefined}
+                        onClick={!user ? handleLoginClick : undefined}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-lg font-bold text-sm hover:bg-white hover:text-black transition-all font-mono text-center"
+                      >
+                        Mid Exam
+                      </motion.a>
+                    )}
+                    {course.final && (
+                      <motion.a
+                        href={user ? course.final : '#'}
+                        target={user ? '_blank' : undefined}
+                        rel={user ? 'noopener noreferrer' : undefined}
+                        onClick={!user ? handleLoginClick : undefined}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="px-4 py-2 bg-white text-black rounded-lg font-bold text-sm hover:bg-gray-200 transition-all font-mono text-center"
+                      >
+                        Final Exam
+                      </motion.a>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <p className="text-gray-400 font-mono text-lg">
+                No courses found for this semester
+              </p>
             </motion.div>
-          ))}
+          )}
         </div>
 
-        {showPopup && (
-          <div className="fixed bottom-4 right-4 bg-red-500 text-white p-2 rounded">
-            Login to access past papers
-          </div>
+        {/* Help text for non-logged users */}
+        {!user && courses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-12 p-6 bg-white/5 border border-white/10 rounded-2xl text-center"
+          >
+            <p className="text-gray-400 font-mono text-sm">
+              💡 Sign in to download past papers
+            </p>
+          </motion.div>
         )}
       </div>
     </div>

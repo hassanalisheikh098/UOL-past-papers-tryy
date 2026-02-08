@@ -1,32 +1,37 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 
+import LandingPage from './pages/LandingPage';
 import ExplorePage from './pages/ExplorePage';
 import SemesterPage from './pages/SemesterPage';
 import CoursesPage from './pages/CoursesPage';
 import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import { LayoutGrid } from './components/Layoutgrid';
-import LayoutGridDemo from './pages/Layoutgriddemo';
-import { HeroScrollDemo } from './components/Help'
-import GridBackgroundDemo from './components/GridBackground';
 
 function App() {
+  const location = useLocation();
+  
+  // Reset scroll to top on route change to avoid partially-scrolled views
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
+  const hiddenNavbarPaths = ['/', '/login', '/signup']; // Hide navbar on landing, login, signup
+  const showNavbar = !hiddenNavbarPaths.includes(location.pathname);
+
   return (
     <>
-      <Navbar />
-      <div className="pt-16"> {/* Add padding for navbar */}
+      {showNavbar && <Navbar />}
+      <div>
         <Routes>
-          <Route path="/" element={<GridBackgroundDemo />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/semester/:departmentId" element={<SemesterPage />} />
           <Route path="/courses/:departmentId/:semesterId" element={<CoursesPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/aboutus" element={<LayoutGridDemo />} />
-          <Route path="/contribute" element={<HeroScrollDemo/>} />
         </Routes>
 
       </div>
