@@ -8,6 +8,7 @@ import Contribute from '../components/Contribute';
 function LandingPage() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({ users: 1800, papers: 65, departments: "01" });
   const [activeFaq, setActiveFaq] = useState(1800);
 
@@ -116,7 +117,10 @@ function LandingPage() {
           </motion.button>
         </nav>
 
-        <button className="md:hidden text-white p-2 hover:bg-white/10 rounded-full transition-colors">
+        <button 
+          className="md:hidden text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="4" x2="20" y1="12" y2="12"></line>
             <line x1="4" x2="20" y1="6" y2="6"></line>
@@ -124,6 +128,48 @@ function LandingPage() {
           </svg>
         </button>
       </header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed top-20 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/10 z-40"
+          >
+            <nav className="flex flex-col gap-4 p-6 text-sm font-mono text-gray-400">
+              <button 
+                onClick={() => { navigate('/explore'); setIsMobileMenuOpen(false); }} 
+                className="hover:text-white transition-colors text-left"
+              >
+                Explore
+              </button>
+              <button 
+                onClick={() => { document.getElementById('about').scrollIntoView({ behavior: 'smooth' }); setIsMobileMenuOpen(false); }} 
+                className="hover:text-white transition-colors text-left"
+              >
+                About Us
+              </button>
+              <button 
+                onClick={() => { document.getElementById('contribute').scrollIntoView({ behavior: 'smooth' }); setIsMobileMenuOpen(false); }} 
+                className="hover:text-white transition-colors text-left"
+              >
+                Contribute
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { navigate(isLoggedIn ? '/explore' : '/login'); setIsMobileMenuOpen(false); }}
+                className="bg-white text-black px-5 py-2 rounded-full text-xs font-bold hover:bg-gray-200 transition-colors w-fit mt-2"
+              >
+                {isLoggedIn ? 'Explore' : 'Login'}
+              </motion.button>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="max-w-6xl mx-auto">
         {/* Hero Section */}
